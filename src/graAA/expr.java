@@ -71,7 +71,7 @@ public class expr {
         }
         for (int i=0;i<K;++i){
             writeIntoMeM("D://实验数据.txt","\nLM: "+LM.get(i));
-            System.out.println("LM: "+LM.get(i));
+            System.out.println("LM第"+(i+1)+"行: "+LM.get(i));
         }
         LMatrix=ArrayUtil.ListToArray2Dimension(LM);
         //根据LM统计出L和La
@@ -92,23 +92,40 @@ public class expr {
         writeIntoMeM("D://实验数据.txt","\nL: "+ArrayUtil.arrayToList(L));
         System.out.println("\nL: "+ArrayUtil.arrayToList(L));
 
-        //随机C矩阵
-        C=new double[M][K];
-        writeIntoMeM("D://实验数据.txt","\n自动生成C：");
-        System.out.println("\n自动生成C：");
-        StringBuilder sb_C=new StringBuilder();
+//        //随机C矩阵
+//        C=new double[M][K];
+//        writeIntoMeM("D://实验数据.txt","\n自动生成C：");
+//        System.out.println("\n自动生成C：");
+//        StringBuilder sb_C=new StringBuilder();
+//        for (int i=0;i<m;++i){
+//            for (int j=0;j<K;++j){
+//                double temp=Math.random();
+//                temp = (double) Math.round(temp * 100) / 100;
+//                C[i][j]=temp;
+//                sb_C.append(temp+",");
+//                System.out.print(temp+",");
+//            }
+//            sb_C.append("\n");
+//            System.out.println();
+//        }
+//        writeIntoMeM("D://实验数据.txt",sb_C.toString());
+        //随机Q矩阵
+        Q_cplex=new double[M][N];
+        writeIntoMeM("D://实验数据.txt","\n自动生成Q：");
+        System.out.println("\n自动生成Q：");
+        StringBuilder sb_Q=new StringBuilder();
         for (int i=0;i<m;++i){
-            for (int j=0;j<K;++j){
+            for (int j=0;j<n;++j){
                 double temp=Math.random();
                 temp = (double) Math.round(temp * 100) / 100;
-                C[i][j]=temp;
-                sb_C.append(temp+",");
+                Q_cplex[i][j]=temp;
+                sb_Q.append(temp+",");
                 System.out.print(temp+",");
             }
-            sb_C.append("\n");
+            sb_Q.append("\n");
             System.out.println();
         }
-        writeIntoMeM("D://实验数据.txt",sb_C.toString());
+        writeIntoMeM("D://实验数据.txt",sb_Q.toString());
 //        System.out.println("断点");
     }
     public static void cplexCode(int n, int m,int k,double[][] Q, int[][] LMatrix, int[] L, int[] La,int term) {
@@ -121,6 +138,11 @@ public class expr {
             for (int i = 0; i < m; i++) {
                 T1[i] = cplex0.numVarArray(n, 0, 1, IloNumVarType.Bool);
             }
+//            for (int i = 0; i < m; i++) {
+//                for (int j=0;j<n;++j){
+//                    T1[i][j] = cplex0.numVar(0, L[j], IloNumVarType.Int);//-TODO 上限需要调整
+//                }
+//            }
             //目标函数
             IloLinearNumExpr exp0 = cplex0.linearNumExpr();
             for (int i = 0; i < m; i++) {
@@ -155,7 +177,7 @@ public class expr {
                     }
                 }
             }
-            //1
+            //如果成功
             if (cplex0.solve()) {
                 cplex0.output().println("Solution status = " + cplex0.getStatus());
                 cplex0.output().println("Solution value = " + cplex0.getObjValue());
@@ -181,9 +203,8 @@ public class expr {
             }
             writeIntoMeM("D://实验数据.txt","第"+term+"次CPlex ：失败！");
             System.out.println("第"+term+"次CPlex ：失败！");
-            cplex0.end();//����
-            //�������뱣������д��txt�ĵ�����1��CPLEX�н�Ĵ����ͳ������������(2)cplex�ͳ������1000�����н�ı�ţ�case�������һ���н⡣����
-            //��3��cplex�� ��������ֱ����е�ʱ��
+            cplex0.end();
+
         } catch (Exception e) {
             System.err.println("Concert exception '" + e + "'caught");
         }

@@ -11,6 +11,13 @@ public class ArrayUtil {
         }
         return L;
     }
+    public static List<Double> arrayToListDouble(double[] a){
+        List<Double> L=new ArrayList<>();
+        for (double i:a){
+            L.add(i);
+        }
+        return L;
+    }
     public static int[] ListToArray(List<Integer> L){
         int[] a=new int[L.size()];
         for (int i=0;i<L.size();++i){
